@@ -1,3 +1,7 @@
+#ifndef GHOST_HPP_
+#define GHOST_HPP_
+
+#include <vector>
 #include "maze.hpp"
 
 enum Direction {
@@ -15,18 +19,21 @@ enum Mode {
 
 class Ghost {
  public:
-    Ghost(Cell startCell, Direction startDirection, std::vector<std::vector<wchar_t>>& maze);
-    void move(std::vector<std::vector<wchar_t>>& maze);
+    Ghost(Maze *maze, Cell startCell, Direction startDirection);
+    void move();
     Cell getCell() const;
     Direction getDirection() const;
     Mode getMode() const;
     void setMode(Mode newMode);
 
  private:
+    Maze *maze;
     Cell cell;
     Direction direction;
     bool isAboveCoin;
     Mode mode;
-    vector<Direction> getPossibleDirections(const std::vector<std::vector<wchar_t>>& maze);
+    vector<Direction> getPossibleDirections();
     Cell moveEncoder(Direction direction);
 };
+
+#endif  // GHOST_HPP_

@@ -11,6 +11,7 @@
 #include <thread>
 #include "pacman.hpp"
 #include "ghost.hpp"
+// #include "maze.hpp"
 
 const int KEY_UP_ = 60419;
 const int KEY_DOWN_ = 60418;
@@ -53,16 +54,13 @@ void initConsole() {
 #endif
 }
 
-void newGame(vector<vector<wchar_t>> &maze, Pacman& pacman, vector<Ghost>& ghosts) {
-    maze = vector<vector<wchar_t>>(HEIGHT, vector<wchar_t>(WIDTH, WALL));
-    generateMaze(maze);
-    removeDeadEnds(maze);
-    generateCoins(maze);
-    printMaze(maze);
-    pacman = Pacman(1, 1, PACMAN_RIGHT, maze);
+void newGame(Maze& maze, Pacman& pacman, std::vector<Ghost>& ghosts) {
+    maze.initializeMaze();
+    maze.printMaze();
+    pacman = Pacman(&maze, {1, 1}, PACMAN_RIGHT);
     ghosts.clear();
     for (int i = 0; i < NUM_GHOSTS; i++) {
-        ghosts.emplace_back(Cell{WIDTH-WIDTH/2, HEIGHT-HEIGHT/2}, (Direction)(rand()%4), maze);
+        ghosts.emplace_back(&maze, Cell{WIDTH-WIDTH/2, HEIGHT-HEIGHT/2}, (Direction)(rand()%4));
     }
     getch();
 }
@@ -81,13 +79,13 @@ int main() {
     system("chcp 65001");
     initConsole();
     srand(static_cast<unsigned>(time(0)));
-    vector<vector<wchar_t>> maze(HEIGHT, vector<wchar_t>(WIDTH, WALL));
+    Maze maze = Maze();
     wint_t control;
     int tick = 0;
     const int MAX_TICK = DAY_DURATION + NIGHT_DURATION;
     bool move = false;
-    Pacman pacman(1, 1, PACMAN_RIGHT, maze);
-    vector<Ghost> ghosts;
+    Pacman pacman(&maze, {1, 1}, PACMAN_RIGHT);
+    std::vector<Ghost> ghosts;
     newGame(maze, pacman, ghosts);
     while (1) {
         loop_start:
@@ -130,10 +128,10 @@ int main() {
         if (move) {
             tick++;
             for (auto& ghost : ghosts)
-                ghost.move(maze);
+                ghost.move();
         }
         if (move || control != (wint_t)ERR)
-            move = pacman.move(maze);
+            move = pacman.move();
         if (pacman.getLives() < 0) {
             initConsole();
             mvaddstr(HEIGHT/2, WIDTH/2, "Game Over");
@@ -149,20 +147,20 @@ int main() {
             continue;
         }
         mvaddstr(0, 0, "Score: ");
-        mvaddstr(0, 7, to_string(pacman.getScore()).c_str());
+        mvaddstr(0, 7, std::to_string(pacman.getScore()).c_str());
         mvaddstr(0, 30, "Lives: ");
-        mvaddstr(0, 37, to_string(pacman.getLives()).c_str());
+        mvaddstr(0, 37, std::to_string(pacman.getLives()).c_str());
         mvaddstr(0, 48, "Current time: ");
         mvaddstr(0, 62, "          ");
-        mvaddstr(0, 62, to_string(tick%1500).c_str());
+        mvaddstr(0, 62, std::to_string(tick%1500).c_str());
         if (tick >= DAY_DURATION)
             mvaddstr(0, 70, "Night");
         else
             mvaddstr(0, 70, "Day  ");
         mvaddstr(0, 80, "Total time: ");
         mvaddstr(0, 93, "          ");
-        mvaddstr(0, 93, to_string(tick).c_str());
-        this_thread::sleep_for(chrono::milliseconds(100));
+        mvaddstr(0, 93, std::to_string(tick).c_str());
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     return 0;
 }

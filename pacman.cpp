@@ -1,80 +1,78 @@
 #include "pacman.hpp"
-#include "maze.hpp"
 
-Pacman::Pacman(int startX, int startY, wchar_t startDirection, std::vector<std::vector<wchar_t>>& maze):
-    x(startX), y(startY), direction(startDirection) {
-        updateCell(maze, x, y, direction);
-    }
+Pacman::Pacman(Maze *maze, Cell startCell, wchar_t startDirection)
+    : maze(maze), cell(startCell), direction(startDirection) {
+    (*maze).updateCell(cell, direction);
+}
 
-int Pacman::move(std::vector<std::vector<wchar_t>>& maze) {
-    if (restartIfKilledByGhost(maze)) return 0;
-    int newX = x, newY = y;
+int Pacman::move() {
+    if (restartIfKilledByGhost()) return 0;
+    Cell newCell = cell;
     switch (direction) {
-        case PACMAN_UP: newY--; break;
-        case PACMAN_DOWN: newY++; break;
-        case PACMAN_LEFT: newX--; break;
-        case PACMAN_RIGHT: newX++; break;
+        case PACMAN_UP: newCell.y--; break;
+        case PACMAN_DOWN: newCell.y++; break;
+        case PACMAN_LEFT: newCell.x--; break;
+        case PACMAN_RIGHT: newCell.x++; break;
     }
 
-    updateScore(maze);
-    if (newX < 0) {
-        newX = WIDTH - 1;
-    } else if (newX > WIDTH - 1) {
-        newX = 0;
+    updateScore();
+    if (newCell.x < 0) {
+        newCell.x = WIDTH - 1;
+    } else if (newCell.x > WIDTH - 1) {
+        newCell.x = 0;
     }
-    if (newY < 0) {
-        newY = HEIGHT - 1;
-    } else if (newY > HEIGHT - 1) {
-        newY = 0;
+    if (newCell.y < 0) {
+        newCell.y = HEIGHT - 1;
+    } else if (newCell.y > HEIGHT - 1) {
+        newCell.y = 0;
     }
 
-    if (isValidMove(maze, Cell{newX, newY})) {
-        updateScore(maze);
-        if (isPacman(maze[y][x])) {
-            updateCell(maze, x, y, SPACE);
+    if ((*maze).isValidMove(newCell)) {
+        updateScore();
+        if (isPacman((*maze)[cell])) {
+            (*maze).updateCell(cell, SPACE);
         }
-        x = newX;
-        y = newY;
-        if (restartIfKilledByGhost(maze)) return 0;
-        updateScore(maze);
-        updateCell(maze, x, y, direction);
+        cell = newCell;
+        if (restartIfKilledByGhost()) return 0;
+        updateScore();
+        (*maze).updateCell(cell, direction);
         return 1;
     } else {
-        updateCell(maze, x, y, direction);
+        (*maze).updateCell(cell, direction);
         return 0;
     }
 }
 
-void Pacman::updateScore(std::vector<std::vector<wchar_t>>& maze) {
-    if (maze[y][x] == COIN) {
+void Pacman::updateScore() {
+    if ((*maze)[cell] == COIN) {
         score++;
-        placeCoin(maze);
+        (*maze).placeCoin();
     }
-    if (maze[y][x] == GHOST_SCATTER) {
-        score+=100;
+    if ((*maze)[cell] == GHOST_SCATTER) {
+        score += 100;
     }
 }
 
-int Pacman::restartIfKilledByGhost(std::vector<std::vector<wchar_t>>& maze) {
-    if (maze[y][x] == GHOST_CHASE) {
+int Pacman::restartIfKilledByGhost() {
+    if ((*maze)[cell] == GHOST_CHASE) {
         for (int i = 0; i < 4; i++) {
-            updateCell(maze, x, y, PACMAN_RIGHT);
+            (*maze).updateCell(cell, PACMAN_RIGHT);
             this_thread::sleep_for(chrono::milliseconds(300));
             refresh();
-            updateCell(maze, x, y, PACMAN_DOWN);
+            (*maze).updateCell(cell, PACMAN_DOWN);
             this_thread::sleep_for(chrono::milliseconds(300));
             refresh();
-            updateCell(maze, x, y, PACMAN_LEFT);
+            (*maze).updateCell(cell, PACMAN_LEFT);
             this_thread::sleep_for(chrono::milliseconds(300));
             refresh();
-            updateCell(maze, x, y, PACMAN_UP);
+            (*maze).updateCell(cell, PACMAN_UP);
             this_thread::sleep_for(chrono::milliseconds(300));
             refresh();
         }
         lives -= 1;
-        updateCell(maze, x, y, SPACE);
-        x = 1, y = 1;
-        updateCell(maze, x, y, direction);
+        (*maze).updateCell(cell, SPACE);
+        cell = {1, 1};
+        (*maze).updateCell(cell, direction);
         return 1;
     }
     return 0;
@@ -85,11 +83,11 @@ void Pacman::changeDirection(wchar_t newDirection) {
 }
 
 int Pacman::getX() const {
-    return x;
+    return cell.x;
 }
 
 int Pacman::getY() const {
-    return y;
+    return cell.y;
 }
 
 int Pacman::getScore() const {

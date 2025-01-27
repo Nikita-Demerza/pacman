@@ -1,10 +1,14 @@
+#ifndef PACMAN_HPP_
+#define PACMAN_HPP_
+
 #include <wchar.h>
 #include <vector>
+#include "maze.hpp"
 
 class Pacman {
  public:
-    Pacman(int startX, int startY, wchar_t startDirection, std::vector<std::vector<wchar_t>>& maze);
-    int move(std::vector<std::vector<wchar_t>>& maze);
+    Pacman(Maze *maze, Cell startCell, wchar_t startDirection);
+    int move();
     void changeDirection(wchar_t newDirection);
     int getX() const;
     int getY() const;
@@ -13,11 +17,13 @@ class Pacman {
     wchar_t getDirection() const;
 
  private:
-    int x, y;
+    Maze *maze;
+    Cell cell;
     wchar_t direction;
     int score = 0;
     int lives = 3;
-    void updateScore(std::vector<std::vector<wchar_t>>& maze);
-    int restartIfKilledByGhost(std::vector<std::vector<wchar_t>>& maze);
+    void updateScore();
+    int restartIfKilledByGhost();
 };
 
+#endif  // PACMAN_HPP_
