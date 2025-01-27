@@ -1,0 +1,2 @@
+g++ -g ./*.*pp -o ./pacman -I./ -Ofast -Wall -lncurses
+x86_64-w64-mingw32-g++ -g -I/usr/x86_64-w64-mingw32/include/ ./*.*pp -o ./pacman.exe -lpdcurses -lgdi32 -lcomdlg32 -lwinmm -static -lncursesw -DNCURSES_STATIC -I./
