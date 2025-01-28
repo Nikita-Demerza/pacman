@@ -6,6 +6,7 @@ const int NUM_COINS = 200;
 const int NUM_GHOSTS = 10;
 const int DAY_DURATION = 1000;
 const int NIGHT_DURATION = 500;
+const int CYCLE_DURATION = DAY_DURATION + NIGHT_DURATION;
 const wchar_t WALL = L'█';
 const wchar_t SPACE = L' ';
 const wchar_t COIN = L'•';
