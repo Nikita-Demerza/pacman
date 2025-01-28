@@ -3,23 +3,12 @@
 GameActivity::GameActivity():
     maze(), pacman(&maze, {1, 1}, PACMAN_RIGHT),
     ghosts(), key(getch()), tick(0), isPaused(true) {
-    initConsole();
     reset();
 }
 
-void initConsole() {
-#ifndef WIN32
-    system("clear");
-    setlocale(LC_ALL, "");
-    wcout.imbue(std::locale(""));
-#endif
-    initscr();
-    resize_term(HEIGHT+1, WIDTH);
-    clearConsole();
-}
-
 void GameActivity::reset() {
-    clearConsole();
+    srand(time(0));
+    initConsole();
     maze.initializeMaze();
     maze.printMaze();
     pacman = Pacman(&maze, {1, 1}, PACMAN_RIGHT);
@@ -29,8 +18,12 @@ void GameActivity::reset() {
     }
 }
 
-void clearConsole() {
+void initConsole() {
+    initscr();
     clear();
+#ifdef WIN32
+    resize_term(HEIGHT+1, WIDTH);
+#endif
     refresh();
     raw();
     noecho();
@@ -63,7 +56,7 @@ void GameActivity::loop() {
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
-    clearConsole();
+    initConsole();
 }
 
 int GameActivity::control() {
@@ -91,7 +84,7 @@ int GameActivity::control() {
         case L'd': pacman.changeDirection(PACMAN_RIGHT); break;
         case L'й':
         case KEY_Q:
-        case L'q': clearConsole(); return -1;
+        case L'q': initConsole(); return -1;
         default: key = (wint_t)ERR;
     }
     return 0;
@@ -143,7 +136,7 @@ void GameActivity::drawPanel() {
 }
 
 void GameActivity::gameOver() {
-    clearConsole();
+    initConsole();
     mvaddstr(HEIGHT/2, WIDTH/2, "Game Over");
     mvaddstr(HEIGHT/2+1, WIDTH/2, "Play again? (y/n)");
     refresh();

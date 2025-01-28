@@ -29,9 +29,6 @@ const int KEY_Q = 185;
 
 const int QUIT = -1;
 
-void clearConsole();
-void initConsole();
-
 class GameActivity {
  public:
     GameActivity();
@@ -53,3 +50,5 @@ class GameActivity {
     int tick;
     bool isPaused;
 };
+
+void initConsole();

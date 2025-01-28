@@ -2,7 +2,7 @@
 
 Pacman::Pacman(Maze *maze, Cell startCell, wchar_t startDirection)
     : maze(maze), cell(startCell), direction(startDirection) {
-    (*maze).updateCell(cell, direction);
+    maze->updateCell(cell, direction);
 }
 
 int Pacman::move() {
@@ -27,18 +27,18 @@ int Pacman::move() {
         newCell.y = 0;
     }
 
-    if ((*maze).isValidMove(newCell)) {
+    if (maze->isValidMove(newCell)) {
         updateScore();
         if (isPacman((*maze)[cell])) {
-            (*maze).updateCell(cell, SPACE);
+            maze->updateCell(cell, SPACE);
         }
         cell = newCell;
         if (restartIfKilledByGhost()) return 0;
         updateScore();
-        (*maze).updateCell(cell, direction);
+        maze->updateCell(cell, direction);
         return 1;
     } else {
-        (*maze).updateCell(cell, direction);
+        maze->updateCell(cell, direction);
         return 0;
     }
 }
@@ -46,7 +46,7 @@ int Pacman::move() {
 void Pacman::updateScore() {
     if ((*maze)[cell] == COIN) {
         score++;
-        (*maze).placeCoin();
+        maze->placeCoin();
     }
     if ((*maze)[cell] == GHOST_SCATTER) {
         score += 100;
@@ -56,23 +56,23 @@ void Pacman::updateScore() {
 int Pacman::restartIfKilledByGhost() {
     if ((*maze)[cell] == GHOST_CHASE) {
         for (int i = 0; i < 4; i++) {
-            (*maze).updateCell(cell, PACMAN_RIGHT);
+            maze->updateCell(cell, PACMAN_RIGHT);
             this_thread::sleep_for(chrono::milliseconds(300));
             refresh();
-            (*maze).updateCell(cell, PACMAN_DOWN);
+            maze->updateCell(cell, PACMAN_DOWN);
             this_thread::sleep_for(chrono::milliseconds(300));
             refresh();
-            (*maze).updateCell(cell, PACMAN_LEFT);
+            maze->updateCell(cell, PACMAN_LEFT);
             this_thread::sleep_for(chrono::milliseconds(300));
             refresh();
-            (*maze).updateCell(cell, PACMAN_UP);
+            maze->updateCell(cell, PACMAN_UP);
             this_thread::sleep_for(chrono::milliseconds(300));
             refresh();
         }
         lives -= 1;
-        (*maze).updateCell(cell, SPACE);
+        maze->updateCell(cell, SPACE);
         cell = {1, 1};
-        (*maze).updateCell(cell, direction);
+        maze->updateCell(cell, direction);
         return 1;
     }
     return 0;

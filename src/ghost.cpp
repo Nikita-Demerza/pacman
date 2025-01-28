@@ -4,7 +4,7 @@
 Ghost::Ghost(Maze *maze, Cell startCell, Direction startDirection):
     maze(maze), cell(startCell), direction(startDirection),
     isAboveCoin((*maze)[startCell] == COIN), mode(Mode::CHASE) {
-    (*maze).updateCell(cell, GHOST_CHASE);
+    maze->updateCell(cell, GHOST_CHASE);
 }
 
 void Ghost::move() {
@@ -20,18 +20,18 @@ void Ghost::move() {
         newCell = Cell{WIDTH - WIDTH / 2, HEIGHT - HEIGHT / 2};
     }
     if (isAboveCoin) {
-        (*maze).updateCell(cell, COIN);
+        maze->updateCell(cell, COIN);
     } else if (isGhost((*maze)[cell])) {
-        (*maze).updateCell(cell, SPACE);
+        maze->updateCell(cell, SPACE);
     }
     cell = newCell;
     isAboveCoin = (*maze)[newCell] == COIN;
     if (mode == Mode::FRIGHTENED) {
-        (*maze).updateCell(newCell, GHOST_FRIGHTENED);
+        maze->updateCell(newCell, GHOST_FRIGHTENED);
     } else if (mode == Mode::SCATTER) {
-        (*maze).updateCell(newCell, GHOST_SCATTER);
+        maze->updateCell(newCell, GHOST_SCATTER);
     } else {
-        (*maze).updateCell(newCell, GHOST_CHASE);
+        maze->updateCell(newCell, GHOST_CHASE);
     }
 }
 
@@ -40,7 +40,7 @@ vector<Direction> Ghost::getPossibleDirections() {
     Cell newCell = cell;
     for (int i = 0; i < 4; i++) {
         newCell = moveEncoder((Direction)i);
-        if (i != (direction + 2) % 4 && (*maze).isValidMove(newCell)) {
+        if (i != (direction + 2) % 4 && maze->isValidMove(newCell)) {
             possibleDirections.push_back((Direction)i);
         }
     }
