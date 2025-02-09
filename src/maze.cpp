@@ -107,10 +107,45 @@ void Maze::generateCoins() {
 }
 
 void Maze::renderCell(const Cell& cell) const {
+    int pair = 2;
+    switch(maze[cell.y][cell.x]){
+        case WALL:
+            pair = 1;
+        case SPACE:
+            pair = 1;
+            break;
+        case COIN:
+            pair = 3;
+            break;
+        case PACMAN_UP:
+        case PACMAN_DOWN:
+        case PACMAN_LEFT:
+        case PACMAN_RIGHT:
+            pair = 4;
+            break;
+        case GHOST_CHASE:
+            pair = 5;
+            break;
+        case GHOST_SCATTER:
+            pair = 6;
+            break;
+        case GHOST_FRIGHTENED:
+            pair = 7;
+            break;
+        default:
+            pair = 1;
+            break;
+    }
     #ifdef WIN32
     mvaddch(cell.y + 1, cell.x, maze[cell.y][cell.x]);
+    mvchgat(cell.y + 1, cell.x, 1, A_NORMAL, pair, NULL);
     #else
-    mvaddwstr(cell.y + 1, cell.x, &maze[cell.y][cell.x]);
+    cchar_t t;
+    t.attr = COLOR_PAIR(pair);
+    t.chars[0] = maze[cell.y][cell.x];
+    t.chars[1] = L'\0';
+    mvadd_wch(cell.y + 1, cell.x, &t);
+    mvchgat(cell.y + 1, cell.x, 1, A_NORMAL | A_BOLD, pair, NULL);
     #endif
 }
 

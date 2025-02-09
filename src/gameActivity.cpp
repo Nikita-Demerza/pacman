@@ -22,7 +22,7 @@ void initConsole() {
     initscr();
     clear();
 #ifdef WIN32
-    resize_term(HEIGHT+1, WIDTH);
+    resize_term(HEIGHT+2, WIDTH);
 #endif
     refresh();
     raw();
@@ -30,6 +30,15 @@ void initConsole() {
     nodelay(stdscr, TRUE);
     keypad(stdscr, TRUE);
     curs_set(0);
+    start_color();
+    init_pair(1, WALL_COLOR, COLOR_BLACK);
+    init_pair(2, SPACE_COLOR, COLOR_BLACK);
+    init_pair(3, COIN_COLOR, COLOR_BLACK);
+    init_pair(4, PACMAN_COLOR, COLOR_BLACK);
+    init_pair(5, GHOST_CHASE_COLOR, COLOR_BLACK);
+    init_pair(6, GHOST_SCATTER_COLOR, COLOR_BLACK);
+    init_pair(7, GHOST_FRIGHTENED_COLOR, COLOR_BLACK);
+    clear();
 #ifdef WIN32
     cbreak();
 #endif
@@ -133,6 +142,8 @@ void GameActivity::drawPanel() {
     mvaddstr(0, 80, "Total time: ");
     mvaddstr(0, 93, "          ");
     mvaddstr(0, 93, std::to_string(tick).c_str());
+
+    mvaddstr(HEIGHT+2,0, "Move: wasd, цфыв or arrow keys. Exit - q.");
 }
 
 void GameActivity::gameOver() {

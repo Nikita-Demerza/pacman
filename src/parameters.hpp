@@ -1,4 +1,9 @@
 #include <wchar.h>
+#ifdef WIN32
+#include <ncursesw/ncurses.h>
+#else
+#include <ncurses.h>
+#endif
 
 const int WIDTH = 101;
 const int HEIGHT = 33;
@@ -17,3 +22,10 @@ const wchar_t PACMAN_RIGHT = L'>';
 const wchar_t GHOST_CHASE = L'☻';
 const wchar_t GHOST_SCATTER = L'☺';
 const wchar_t GHOST_FRIGHTENED = L'0';
+const int WALL_COLOR = COLOR_RED;
+const int SPACE_COLOR = COLOR_BLACK;
+const int COIN_COLOR = COLOR_YELLOW;
+const int PACMAN_COLOR = COLOR_YELLOW;
+const int GHOST_CHASE_COLOR = COLOR_CYAN;
+const int GHOST_SCATTER_COLOR = COLOR_BLUE;
+const int GHOST_FRIGHTENED_COLOR = COLOR_WHITE;
